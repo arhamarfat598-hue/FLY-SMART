@@ -1,0 +1,391 @@
+<!doctype html> 
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlySmart — Simple White & Blue Flight Landing</title>
+  <meta name="description" content="Search & book flights — 10% discount, lowest fare guarantee, 24/7 support." />
+  <meta name="theme-color" content="#0066ff">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#ffffff;           /* White background */
+      --card:#f5f8ff;         /* Light soft blue card background */
+      --muted:#4b5b7c;        /* Soft grayish-blue text */
+      --accent:#0066ff;       /* Primary bright blue */
+      --accent-2:#0050d4;     /* Darker blue */
+      --success:#0db05f;
+      font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:#102030;min-height:100vh}
+    a{color:inherit}
+    .container{max-width:1100px;margin:0 auto;padding:24px}
+
+    /* Header / sticky search */
+    header{position:sticky;top:0;background:rgba(255,255,255,0.95);backdrop-filter:blur(6px);z-index:60;border-bottom:1px solid #eef3ff}
+    .topbar{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 24px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{height:36px;width:36px;border-radius:8px;background:linear-gradient(90deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:#fff;font-weight:700}
+    nav{display:flex;gap:12px;align-items:center}
+
+    /* Hero */
+    .hero{position:relative;border-radius:12px;overflow:hidden;margin:18px 0}
+    .hero .media{width:100%;height:420px;object-fit:cover;display:block}
+    @media (max-width:800px){.hero .media{height:320px}}
+    .hero .overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,0.08),rgba(0,0,0,0.18));display:flex;align-items:center;padding:28px}
+    .hero-content{max-width:640px}
+    .headline{font-size:clamp(22px,4vw,38px);margin:0 0 8px}
+    .sub{color:var(--muted);margin:0 0 18px}
+
+    /* Search card (prominent) */
+    .search-card{background:var(--card);padding:14px;border-radius:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;box-shadow:0 6px 18px rgba(2,50,120,0.06)}
+    .field{flex:1;min-width:130px}
+    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+    input,select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eefc;background:transparent}
+    .cta{background:linear-gradient(90deg,var(--accent),var(--accent-2));padding:12px 18px;border-radius:10px;border:0;color:white;font-weight:700;cursor:pointer}
+
+    /* Sections */
+    section{margin:20px 0}
+    h2{margin:0 0 10px}
+    .usps{display:flex;gap:12px;flex-wrap:wrap}
+    .usp{background:#fff;border:1px solid #eef6ff;padding:12px;border-radius:10px;min-width:180px;display:flex;gap:10px;align-items:center}
+    .usp .ic{width:36px;height:36px;border-radius:8px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;display:grid;place-items:center}
+
+    .deals{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    @media (max-width:900px){.deals{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:600px){.deals{grid-template-columns:1fr}}
+    .deal{background:#fff;border:1px solid #eef4ff;padding:12px;border-radius:10px}
+    .price{font-weight:700;font-size:18px;color:var(--accent)}
+    .route{color:var(--muted);font-size:13px}
+
+    .trust{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    .logo-box{background:#fff;border:1px solid #eef4ff;padding:10px 12px;border-radius:8px;color:var(--muted)}
+
+    .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:700px){.compare-grid{grid-template-columns:1fr}}
+
+    footer{padding:24px 0;color:var(--muted);font-size:14px}
+
+    /* small */
+    .badge{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;padding:6px 10px;border-radius:999px;font-weight:700}
+
+    /* results */
+    .result-meta{margin-top:8px;color:var(--muted);font-size:13px}
+    .loader{display:inline-block;padding:6px 10px;background:#fff;border-radius:8px;border:1px solid #eef4ff}
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">FS</div>
+        <div>
+          <div style="font-weight:700">FlySmart</div>
+          <div style="font-size:12px;color:var(--muted)">Lowest fares & fast booking</div>
+        </div>
+      </div>
+      <nav>
+        <a class="badge">10% OFF</a>
+        <a href="#deals" style="color:var(--muted);text-decoration:none">Deals</a>
+        <a href="#trust" style="color:var(--muted);text-decoration:none">Partners</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- HERO (image background for clarity + faster load) -->
+    <section class="hero">
+      <video class="media" autoplay muted loop playsinline>
+        <source src="https://www.pexels.com/download/video/3678380/" type="video/mp4">
+      </video>
+      <div class="overlay">
+        <div class="hero-content">
+          <h1 class="headline">Book flights at the best prices — fast and secure</h1>
+          <p class="sub">Save with exclusive 10% discounts · 24/7 support · Secure payment options</p>
+
+          <!-- Prominent search card -->
+          <form id="searchForm" class="search-card" onsubmit="handleSearch(event)">
+            <div class="field">
+              <label for="from">From</label>
+              <input id="from" name="from" placeholder="City or airport (DEL)" required />
+            </div>
+            <div class="field">
+              <label for="to">To</label>
+              <input id="to" name="to" placeholder="City or airport (DXB)" required />
+            </div>
+            <div style="min-width:150px">
+              <label for="date">Date</label>
+              <input id="date" name="date" type="date" required />
+            </div>
+            <div style="min-width:120px">
+              <label for="passengers">Passengers</label>
+              <select id="passengers" name="passengers"><option>1</option><option>2</option><option>3</option><option>4+</option></select>
+            </div>
+            <div style="min-width:130px">
+              <label for="cls">Class</label>
+              <select id="cls" name="cls"><option>Economy</option><option>Business</option></select>
+            </div>
+            <div style="display:flex;align-items:center">
+              <button class="cta" type="submit">Search Flights</button>
+            </div>
+          </form>
+
+          <div id="searchStatus" style="margin-top:12px"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- USPs -->
+    <section aria-label="Why book with us">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div>
+          <h2>Why choose FlySmart?</h2>
+          <p style="color:var(--muted)">Fast search, transparent pricing & easy refunds.</p>
+        </div>
+        <div class="badge">Flat 10% off</div>
+      </div>
+
+      <div class="usps" style="margin-top:12px">
+        <div class="usp"><div class="ic">✈️</div><div><strong>Lowest fares</strong><div style="color:var(--muted)">Price match guarantee</div></div></div>
+        <div class="usp"><div class="ic">💬</div><div><strong>24/7 support</strong><div style="color:var(--muted)">Chat and email</div></div></div>
+        <div class="usp"><div class="ic">🔒</div><div><strong>Secure payments</strong><div style="color:var(--muted)">PCI compliant</div></div></div>
+        <div class="usp"><div class="ic">🔁</div><div><strong>Easy refunds</strong><div style="color:var(--muted)">Transparent policy</div></div></div>
+      </div>
+    </section>
+
+    <!-- Popular Routes & Deals -->
+    <section id="deals">
+      <h2>Popular routes & deals</h2>
+      <div style="display:flex;gap:8px;margin:10px 0;flex-wrap:wrap">
+        <select aria-label="Sort" style="padding:8px;border-radius:8px;border:1px solid #eef4ff;background:#fff"><option>Sort: Price</option><option>Sort: Duration</option></select>
+        <select aria-label="Stops" style="padding:8px;border-radius:8px;border:1px solid #eef4ff;background:#fff"><option>All stops</option><option>Non-stop</option></select>
+      </div>
+
+      <div class="deals" id="dealsGrid">
+        <article class="deal" tabindex="0"><div class="route">Delhi → Dubai</div><div class="price">₹8,999</div><div style="color:var(--muted)">Non-stop · 3h 45m</div></article>
+        <article class="deal" tabindex="0"><div class="route">Mumbai → Singapore</div><div class="price">₹14,499</div><div style="color:var(--muted)">1 stop · 6h 10m</div></article>
+        <article class="deal" tabindex="0"><div class="route">Bengaluru → London</div><div class="price">₹36,999</div><div style="color:var(--muted)">1 stop · 11h 30m</div></article>
+      </div>
+
+      <!-- Container to show API results -->
+      <div style="margin-top:18px">
+        <h3>Search results</h3>
+        <div id="apiResults" style="display:grid;gap:10px;margin-top:8px"></div>
+      </div>
+    </section>
+
+    <!-- Trust & Credibility -->
+    <section id="trust">
+      <h2>Trusted by</h2>
+      <div class="trust" style="margin-top:8px">
+        <div class="logo-box">Visa</div>
+        <div class="logo-box">Mastercard</div>
+        <div class="logo-box">Amadeus</div>
+        <div class="logo-box">IATA</div>
+        <div class="logo-box">Google Pay</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px">
+        <div style="background:#fff;border:1px solid #eef4ff;padding:12px;border-radius:8px"><strong>Ravi K.</strong><p style="color:var(--muted)">"Booked last-minute — great price and fast support!"</p></div>
+        <div style="background:#fff;border:1px solid #eef4ff;padding:12px;border-radius:8px"><strong>Priya S.</strong><p style="color:var(--muted)">"Refund was processed quickly. Recommended."</p></div>
+        <div style="background:#fff;border:1px solid #eef4ff;padding:12px;border-radius:8px"><strong>Arjun M.</strong><p style="color:var(--muted)">"Multiple payment options — super convenient."</p></div>
+      </div>
+    </section>
+
+    <!-- Why Book With Us -->
+    <section>
+      <h2>Why book with FlySmart vs others</h2>
+      <div class="compare-grid" style="margin-top:12px">
+        <div style="background:#fff;border:1px solid #eef4ff;padding:12px;border-radius:8px"><strong>FlySmart</strong><ul style="color:var(--muted)"><li>Transparent pricing + taxes up front</li><li>24/7 support</li><li>Exclusive promo codes</li></ul></div>
+        <div style="background:#fff;border:1px solid #f0f7ff;padding:12px;border-radius:8px"><strong>Others</strong><ul style="color:var(--muted)"><li>Hidden fees</li><li>Slower support</li><li>Limited refunds</li></ul></div>
+      </div>
+    </section>
+
+    <!-- Repeat CTA -->
+    <section style="margin-top:18px;padding:16px;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+      <div>
+        <h3 style="margin:0">Ready to find your next flight?</h3>
+        <p style="margin:6px 0 0;color:rgba(255,255,255,0.9)">Search now and claim available 10% discounts at checkout.</p>
+      </div>
+      <div><a href="#searchForm"><button class="cta" style="background:transparent;box-shadow:0 6px 20px rgba(0,0,0,0.12)">Search Flights</button></a></div>
+    </section>
+
+    <footer>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
+        <div style="color:var(--muted)">© 2025 FlySmart · Terms · Privacy</div>
+        <div style="color:var(--muted)">Need help? <strong>support@flysmart.example</strong></div>
+      </div>
+    </footer>
+
+  </main>
+
+  <script>
+    /**
+     * AeroDataBox (RapidAPI) integration:
+     * - Replace RAPIDAPI_KEY with your RapidAPI key
+     * - We first resolve user's "city/airport" text to an airport via /airports/search/term/{term}
+     * - Then use /airports/iata/{from}/distance-time/{to} to get estimated distance & flight time.
+     *
+     * Notes / docs: AeroDataBox docs and RapidAPI listing.
+     * See: https://doc.aerodatabox.com and AeroDataBox on RapidAPI.
+     */
+
+    const RAPIDAPI_HOST = 'aerodatabox.p.rapidapi.com';
+    const RAPIDAPI_KEY = '05120d0619mshbf8a5b27be89422p1f835bjsn00ec12905763'; // <-- replace this with your RapidAPI key
+
+    // helper: show small status below hero
+    function setStatus(html){
+      document.getElementById('searchStatus').innerHTML = html;
+    }
+
+    async function findAirport(term){
+      // call search/term endpoint to find airports for user input
+      // endpoint used: GET https://aerodatabox.p.rapidapi.com/airports/search/term/{term}?limit=5
+      const url = 'https://' + RAPIDAPI_HOST + '/airports/search/term/' + encodeURIComponent(term) + '?limit=5';
+      try{
+        const res = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'x-rapidapi-host': 'aerodatabox.p.rapidapi.com',
+            'x-rapidapi-key': '05120d0619mshbf8a5b27be89422p1f835bjsn00ec12905763'
+          }
+        });
+        if(!res.ok) {
+          console.error('airport search failed', res.status, await res.text());
+          return null;
+        }
+        const data = await res.json();
+        // Data returns an array of airport objects; pick first best match with iata code if possible.
+        if(Array.isArray(data) && data.length>0){
+          // prefer objects with iata code
+          const withIata = data.find(a => a.iata && a.iata.length>0) || data[0];
+          // return object containing name + iata + icao + city
+          return {
+            name: withIata.name || withIata.airportName || '',
+            iata: withIata.iata || '',
+            icao: withIata.icao || '',
+            city: withIata.city || withIata.municipalityName || ''
+          };
+        }
+        return null;
+      } catch(err){
+        console.error('airport search error', err);
+        return null;
+      }
+    }
+
+    async function getDistanceTime(iataFrom, iataTo){
+      // Using distance-time endpoint documented by AeroDataBox:
+      // GET /airports/:codeType/:code/distance-time/:codeTo
+      // We'll use codeType = iata and code = iataFrom
+      const url = 'https://' + RAPIDAPI_HOST + '/airports/iata/' + encodeURIComponent(iataFrom) + '/distance-time/' + encodeURIComponent(iataTo);
+      try{
+        const res = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'x-rapidapi-host': 'aerodatabox.p.rapidapi.com',
+            'x-rapidapi-key': '05120d0619mshbf8a5b27be89422p1f835bjsn00ec12905763'
+          }
+        });
+        if(!res.ok){
+          console.error('distance-time failed', res.status, await res.text());
+          return null;
+        }
+        const data = await res.json();
+        // data usually contains distanceKm and flightTime (or similar fields)
+        return data;
+      }catch(err){
+        console.error('distance-time error', err);
+        return null;
+      }
+    }
+
+    function renderResultCard({from, to, date, passengers, cls, distanceTime}) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'deal';
+      const route = document.createElement('div');
+      route.className = 'route';
+      route.textContent = `${from.name || from.iata} → ${to.name || to.iata} (${from.iata} → ${to.iata})`;
+      const price = document.createElement('div');
+      price.className = 'price';
+      // placeholder price logic: base price by distance if available
+      let priceLabel = 'Price unknown';
+      if(distanceTime && distanceTime.distanceKm){
+        const km = distanceTime.distanceKm;
+        const base = Math.max(1000, Math.round(km * 5)); // very rough rupee placeholder
+        priceLabel = `₹${base.toLocaleString()}`;
+      } else {
+        priceLabel = '₹--';
+      }
+      price.textContent = priceLabel;
+      const meta = document.createElement('div');
+      meta.style.color = 'var(--muted)';
+      meta.style.fontSize = '13px';
+      const flightTimeText = distanceTime && (distanceTime.flightTime || distanceTime.flightTimeFormatted) ? (distanceTime.flightTime || distanceTime.flightTimeFormatted) : 'Duration N/A';
+      const distText = distanceTime && distanceTime.distanceKm ? `${distanceTime.distanceKm} km` : '';
+      meta.textContent = `${flightTimeText} · ${distText} · ${date} · ${passengers} · ${cls}`;
+      wrapper.appendChild(route);
+      wrapper.appendChild(price);
+      wrapper.appendChild(meta);
+      return wrapper;
+    }
+
+    async function handleSearch(e){
+      e.preventDefault();
+      const fromText = document.getElementById('from').value.trim();
+      const toText = document.getElementById('to').value.trim();
+      const date = document.getElementById('date').value;
+      const passengers = document.getElementById('passengers').value;
+      const cls = document.getElementById('cls').value;
+      if(!fromText || !toText || !date){ alert('Please fill From, To and Date'); return; }
+
+      // show loader/status
+      setStatus('<span class="loader">Searching airports & fetching estimates…</span>');
+      document.getElementById('apiResults').innerHTML = '';
+
+      // 1) resolve 'from' and 'to' to airports (IATA ideally)
+      const [fromAirport, toAirport] = await Promise.all([ findAirport(fromText), findAirport(toText) ]);
+      if(!fromAirport || !toAirport){
+        setStatus('<span style="color:#c0392b">Could not resolve one or both airports from your input. Try a city + airport code (e.g., "Delhi DEL")</span>');
+        return;
+      }
+
+      // 2) get distance & flight time estimate
+      const distanceTime = await getDistanceTime(fromAirport.iata || fromAirport.icao, toAirport.iata || toAirport.icao);
+      if(!distanceTime){
+        setStatus('<span style="color:#c0392b">Failed to get flight time/distance — see console for details.</span>');
+        return;
+      }
+
+      // 3) render example result card (you can replace with actual schedule calls)
+      const resultCard = renderResultCard({from: fromAirport, to: toAirport, date, passengers, cls, distanceTime});
+      document.getElementById('apiResults').appendChild(resultCard);
+      setStatus('<span style="color:var(--success)">Results shown below — replace placeholders with full schedule/booking logic as needed.</span>');
+
+      // Save last search locally (keeps previous behavior)
+      const payload = {from: fromText, to: toText, date, passengers, cls, fromResolved: fromAirport, toResolved: toAirport};
+      localStorage.setItem('lastSearch', JSON.stringify(payload));
+
+      // NOTE: To get real flight schedules or live status you can use additional endpoints:
+      // - Flight schedules / flights by route / flight status endpoints from AeroDataBox (see docs).
+      // Example endpoints and docs: https://doc.aerodatabox.com and RapidAPI AeroDataBox listing.
+    }
+
+    // Optional: pre-fill last search
+    (function prefill(){
+      try{
+        const prev = JSON.parse(localStorage.getItem('lastSearch') || 'null');
+        if(prev){
+          if(prev.from) document.getElementById('from').value = prev.from;
+          if(prev.to) document.getElementById('to').value = prev.to;
+          if(prev.date) document.getElementById('date').value = prev.date;
+        }
+      }catch(e){}
+    })();
+  </script>
+</body>
+</html>
